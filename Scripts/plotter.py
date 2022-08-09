@@ -6,9 +6,12 @@ import plotly.express as px
 
 
 # %% IMPORT DATA
-df = pd.read_csv(
-    '../sample_data.csv'
-)
+# path = '../sample_data.csv'
+path = '../Data/Five System Total.csv'
+
+df = pd.read_csv(path)
+
+
 
 
 # %% PLOTLY
@@ -17,13 +20,22 @@ df_px = df.copy()
 
 df_px['data_period'] = df_px['data_period'].astype('datetime64')
 
+df_px = df_px.rename(
+    {
+        'DHS Total Unique Count': 'DHS',
+        'HRA DV Total Unique Count': 'HRA DV', 
+        'HRA HASA Total Unique Count': 'HRA HASA', 
+        'DYCD Total Unique Count': 'DYCD', 
+        'HPD Total Unique Count (105% Est.)': 'HPD (Est)'
+    }, axis=1)
+
 df_px['Five System Total'] = df_px[
     [
-    'DHS Total Uniqe Count', 
-    'HRA DV Total Unique Count', 
-    'HRA HASA Total Unique Count', 
-    'DYCD Total Unique Count', 
-    'HPD Total Unique Count (105% Est.)'
+    'DHS', 
+    'HRA DV', 
+    'HRA HASA', 
+    'DYCD', 
+    'HPD (Est)'
     ]
 ].sum(axis=1)
 
@@ -31,18 +43,19 @@ fig = px.bar(
     df_px, 
     x='data_period', 
     y=[
-        'DHS Total Uniqe Count', 
-        'HRA DV Total Unique Count', 
-        'HRA HASA Total Unique Count', 
-        'DYCD Total Unique Count', 
-        'HPD Total Unique Count (105% Est.)'
+        'DHS', 
+        'HRA DV', 
+        'HRA HASA', 
+        'DYCD', 
+        'HPD (Est)', 
     ],
+    title='Five System Totals',
     color_discrete_map={
-        'DHS Total Uniqe Count': '#5cb8b2',
-        'HRA DV Total Unique Count': '#F99D1B',
-        'HRA HASA Total Unique Count': '#5cc8c2',
-        'DYCD Total Unique Count': '#5cd8d2',
-        'HPD Total Unique Count (105% Est.)': '#5ce8e2',
+        'DHS': '#5cb8b2',
+        'HRA DV': '#F99D1B',
+        'HRA HASA': '#5cc8c2',
+        'DYCD': '#5cd8d2',
+        'HPD (Est)': '#5ce8e2',
     },
     labels={
         'data_period': 'Month/Year of Data',
@@ -53,17 +66,19 @@ fig = px.bar(
     width=800, height=400 # Using this for comparison with altair
 )
 
-fig.update_layout({
-    'plot_bgcolor': 'rgba(0, 0, 0, 0)',
-    'paper_bgcolor': 'rgba(0, 0, 0, 0)',
-    # 'font_family': 'Lato',
-})
+fig.update_layout(
+    {
+        'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+        'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+        # 'font_family': 'Lato',
+    },
+    xaxis_hoverformat='%B %Y',
+)
 
 fig.write_html('plotly_chart.html')
 
 
 # %% ALTAIR
-
 
 df_alt = df.melt(
     id_vars='data_period',
@@ -76,7 +91,7 @@ df_alt['data_period'] = df_alt['data_period'].astype('datetime64')
 df_alt['tooltip'] = df_alt.apply(lambda x: f"{x['Unique Count']} ({x['Shelter System']})", axis=1)
 
 sort_order_map = {
-    'DHS Total Uniqe Count': 1,
+    'DHS Total Unique Count': 1,
     'HRA DV Total Unique Count': 3,
     'HRA HASA Total Unique Count': 2,
     'DYCD Total Unique Count': 5,
@@ -86,7 +101,7 @@ sort_order_map = {
 df_alt['sort_order'] = df_alt.apply(lambda x: sort_order_map[x['Shelter System']], axis=1)
 
 color_map = {
-    'DHS Total Uniqe Count': '#5cb8b2',
+    'DHS Total Unique Count': '#5cb8b2',
     'HRA DV Total Unique Count': '#F99D1B',
     'HRA HASA Total Unique Count': '#3fb0d9',
     'DYCD Total Unique Count': '#1d7595',
