@@ -1,4 +1,4 @@
-#%%
+# %%
 # import plotly.express as px
 import altair as alt
 import pandas as pd
@@ -66,7 +66,25 @@ fig = px.bar(
     width=800, height=400 # Using this for comparison with altair
 )
 
-fig.update_traces(marker_line_width=0)
+fig.update_traces(
+    marker_line_width=0
+)
+
+fig.update_xaxes(
+    fixedrange=True,
+    ticks='outside',
+    # tickwidth=2,
+    tickcolor='white',
+    ticklen=5
+    )
+fig.update_yaxes(
+    fixedrange=True,
+    ticks='outside',
+    # tickwidth=2,
+    tickcolor='white',
+    ticklen=5
+    )
+
 
 fig.update_layout(
     {
