@@ -105,14 +105,6 @@ var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
   tooltip: am5.Tooltip.new(root, {})
 }));
 
-// X axis ticks
-// var xRenderer = xAxis.get("renderer");
-// xRenderer.ticks.template.setAll({
-//   stroke: am5.color(0x000000),
-//   visible: true
-// });
-
-
 xAxis.data.setAll(data);
 
 
@@ -135,8 +127,8 @@ for (let i = 0; i < missingMonths.length; i++) {
 
 var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
   min: 0,
-  calculateTotals: true,
-  renderer: am5xy.AxisRendererY.new(root, {})
+  renderer: am5xy.AxisRendererY.new(root, {}),
+  calculateTotals: true
 }));
 
 
@@ -169,7 +161,7 @@ legend.markers.template.setup = function(marker) {
 
 // Add series
 // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-function makeSeries(name, fieldName) {
+function makeSeries(name, fieldName, total) {
   var series = chart.series.push(am5xy.ColumnSeries.new(root, {
     name: name,
     stacked: true,
@@ -184,6 +176,33 @@ function makeSeries(name, fieldName) {
     tooltipY: am5.percent(10)
   });
 
+  if (total) {
+    series.bullets.push(function(target, series, dataItem) {
+      var index = chart.series.indexOf(series);
+      var dataItemIndex = series.dataItems.indexOf(dataItem);
+      var sum = 0;
+      chart.series.eachReverse(function(series, seriesIndex) {
+        if (seriesIndex <= index) {
+          var seriesDataItem = series.dataItems[dataItemIndex];
+          sum += seriesDataItem.get("valueY");
+        //   if (!series.get("stacked")) {
+        //     index = -1;
+        //   }
+        }
+      });
+      return am5.Bullet.new(root, {
+        locationY: 1,
+        sprite: am5.Label.new(root, {
+          text: root.numberFormatter.format(sum),
+          fill: am5.color(0x000000),
+          centerY: am5.p100,
+          centerX: am5.p50,
+          populateText: true
+        })
+      });
+    });
+  }
+
   series.data.setAll(data);
 
   // Make stuff animate on load
@@ -197,7 +216,7 @@ makeSeries("DHS", "DHS Total Unique Count");
 makeSeries("HRA DV", "HRA DV Total Unique Count");
 makeSeries("HRA HASA", "HRA HASA Total Unique Count");
 makeSeries("HPD (Est.)", "HPD Total Unique Count (105% Est.)");
-makeSeries("DYCD", "DYCD Total Unique Count");
+makeSeries("DYCD", "DYCD Total Unique Count"); // Add 'true' as third parameter to enable totals
 
 
 // Make stuff animate on load
