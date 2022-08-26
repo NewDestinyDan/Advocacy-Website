@@ -105,6 +105,14 @@ var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
   tooltip: am5.Tooltip.new(root, {})
 }));
 
+// X axis ticks
+// var xRenderer = xAxis.get("renderer");
+// xRenderer.ticks.template.setAll({
+//   stroke: am5.color(0x000000),
+//   visible: true
+// });
+
+
 xAxis.data.setAll(data);
 
 var missingMonths = [
@@ -129,7 +137,6 @@ var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
 }));
 
 
-
 // Add legend
 // https://www.amcharts.com/docs/v5/charts/xy-chart/legend-xy-series/
 var legend = chart.children.push(am5.Legend.new(root, {
@@ -137,6 +144,25 @@ var legend = chart.children.push(am5.Legend.new(root, {
   x: am5.p50
 }));
 
+
+// Adding checkboxes to legend
+legend.markers.template.setup = function(marker) {
+    var check = am5.Graphics.new(root, {
+      fill: am5.color(0x000000),
+      fillOpacity: 1,
+      width: 20,
+      height: 20,
+      layer: 50,
+      svgPath: "M15.75 2.527c-.61-.468-1.46-.328-1.902.32l-6.325 9.255L4.04 8.328a1.3 1.3 0 0 0-1.922-.062 1.505 1.505 0 0 0-.062 2.043s4.234 4.695 4.843 5.168c.61.468 1.457.328 1.903-.32L16.05 4.55c.445-.653.308-1.555-.301-2.024Zm0 0"
+    });
+    
+    check.states.create("disabled", {
+      fillOpacity: 0
+    });
+    
+    marker.children.push(check);
+}
+  
 
 // Add series
 // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
