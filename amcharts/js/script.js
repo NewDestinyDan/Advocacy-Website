@@ -29,19 +29,19 @@ var chart = root.container.children.push(am5xy.XYChart.new(root, {
   panY: false,
 //   wheelX: "panX",
 //   wheelY: "zoomX",
-  layout: root.verticalLayout
+  layout: root.verticalLayout,
+  paddingTop: 40
 }));
 
 
 // Set colors
 chart.get("colors").set("colors", [
-    am5.color("#5cb8b2"),
-    am5.color("#F99D1B"),
-    am5.color("#5cc8c2"),
-    am5.color("#5cd8d2"),
-    am5.color("#5ce8e2")
+    am5.color(0x00ACAC),
+    am5.color(0xF99D1C),
+    am5.color(0x008888),
+    am5.color(0x00d1d1),
+    am5.color(0x006464),
   ]);
-
 
 
 // Add scrollbar
@@ -115,6 +115,8 @@ var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
 
 xAxis.data.setAll(data);
 
+
+// Months with missing data
 var missingMonths = [
     {"data_period": "Oct 2019"},
     {"data_period": "Nov 2019"},
@@ -133,6 +135,7 @@ for (let i = 0; i < missingMonths.length; i++) {
 
 var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
   min: 0,
+  calculateTotals: true,
   renderer: am5xy.AxisRendererY.new(root, {})
 }));
 
@@ -177,7 +180,7 @@ function makeSeries(name, fieldName) {
   }));
 
   series.columns.template.setAll({
-    tooltipText: "{name}, {categoryX}: {valueY}",
+    tooltipText: "{categoryX}\n{name}\n{valueY}",
     tooltipY: am5.percent(10)
   });
 
@@ -187,18 +190,6 @@ function makeSeries(name, fieldName) {
   // https://www.amcharts.com/docs/v5/concepts/animations/
   series.appear();
 
-//   series.bullets.push(function () {
-//     return am5.Bullet.new(root, {
-//       sprite: am5.Label.new(root, {
-//         text: "{valueY}",
-//         fill: root.interfaceColors.get("alternativeText"),
-//         centerY: am5.p50,
-//         centerX: am5.p50,
-//         populateText: true
-//       })
-//     });
-//   });
-
   legend.data.push(series);
 }
 
@@ -207,6 +198,7 @@ makeSeries("HRA DV", "HRA DV Total Unique Count");
 makeSeries("HRA HASA", "HRA HASA Total Unique Count");
 makeSeries("HPD (Est.)", "HPD Total Unique Count (105% Est.)");
 makeSeries("DYCD", "DYCD Total Unique Count");
+
 
 // Make stuff animate on load
 // https://www.amcharts.com/docs/v5/concepts/animations/
