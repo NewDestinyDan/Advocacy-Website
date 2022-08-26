@@ -62,12 +62,16 @@ fig = px.bar(
         'variable': 'Shelter System',
         'value': 'Unique Count',
     },
-    hover_name='Five System Total',
-    width=800, height=400 # Using this for comparison with altair
+    custom_data=['Five System Total'],
+    # hover_name='Five System Total',
+    # width=800, height=400 # Using this for comparison with altair
 )
 
+print("plotly express hovertemplate:", fig.data[0].hovertemplate)
+
 fig.update_traces(
-    marker_line_width=0
+    marker_line_width=0,
+    hovertemplate="Shelter System=%{customdata[0]}<br>Month/Year of Data=%{x}<br>Unique Count=%{y}<extra></extra>"
 )
 
 fig.update_xaxes(
@@ -90,6 +94,7 @@ fig.update_layout(
     {
         'plot_bgcolor': 'rgba(0, 0, 0, 0)',
         'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+        # 'hovermode': "x",
         # 'font_family': 'Lato',
     },
     xaxis_hoverformat='%B %Y',

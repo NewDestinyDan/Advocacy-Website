@@ -245,3 +245,21 @@ df = ll37_get_open_data()
 df.to_csv('../Data/Open Data Five System Total.csv')
 
 
+# %%
+am_charts_df = df.copy()
+
+am_charts_df.index = am_charts_df.index.strftime("%b %Y")
+
+am_charts_df = am_charts_df.reset_index()
+
+am_charts_df = am_charts_df.T
+
+# am_charts_df.to_json('../amcharts/json/data_from_scraper.json')
+
+save_data = list(am_charts_df.to_dict().values())
+
+with open('../amcharts/json/data_from_scraper.json', 'w') as file:
+    file.write(str(save_data).replace("'", '"'))
+
+
+# %%
