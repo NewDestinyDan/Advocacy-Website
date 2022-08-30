@@ -28,17 +28,26 @@ var chart = root.container.children.push(am5xy.XYChart.new(root, {
   panX: false,
   panY: false,
   layout: root.verticalLayout,
+  paddingTop: 40
 }));
 
 
 // Set colors
 chart.get("colors").set("colors", [
-    am5.color(0x00ACAC),
-    am5.color(0xF99D1C),
-    am5.color(0x008888),
-    am5.color(0x00d1d1),
-    am5.color(0x006464),
+  am5.color(0x00ACAC),
+  am5.color(0xF99D1C),
+  am5.color(0x008888),
+  am5.color(0x00d1d1),
+  am5.color(0x006464),
+  am5.color(0x00ACAC), // This is necessary to make the colors work
   ]);
+
+  // Add cursor
+// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+  behavior: "none"
+}));
+cursor.lineY.set("visible", false);
 
 
 // Add scrollbar
@@ -108,8 +117,33 @@ var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
 var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
   min: 0,
   renderer: am5xy.AxisRendererY.new(root, {}),
-  calculateTotals: true
+  // calculateTotals: true
 }));
+
+// Set up secondary X axis to show sum tooltip for
+var xAxis2 = chart.xAxes.push(am5xy.DateAxis.new(root, {
+  baseInterval: { timeUnit: "month", count: 1 },
+  renderer: am5xy.AxisRendererX.new(root, {
+    opposite: true
+  }),
+  tooltip: am5.Tooltip.new(root, {})
+}));
+
+// Disable labels
+xAxis2.get("renderer").labels.template.set("forceHidden", true);
+
+
+// Configure tooltip content using adapter
+xAxis2.get("tooltip").label.adapters.add("text", function(text, target) {
+  var sum = 0;
+  chart.series.each(function(series) {
+    var dataItem = series.get("tooltipDataItem");
+    if (dataItem) {
+      sum += dataItem.get("valueY");
+    }
+  })
+  return "Total: [bold]" + root.numberFormatter.format(sum) + "[/]";
+});
 
 
 // Add legend
@@ -141,60 +175,58 @@ legend.markers.template.setup = function(marker) {
 
 // Add series
 // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-function makeSeries(name, fieldName, total) {
-  var series = chart.series.push(am5xy.ColumnSeries.new(root, {
-    name: name,
-    stacked: true,
-    xAxis: xAxis,
-    yAxis: yAxis,
-    valueYField: fieldName,
-    valueXField: "data_period",
-  }));
+function makeSeries(name, fieldName, hidden) {
+  if (hidden) {
+    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+      xAxis: xAxis2,
+      yAxis: yAxis,
+      stacked: true,
+      valueYField: fieldName,
+      valueXField: "data_period"
+    }));
 
-  series.columns.template.setAll({
-    tooltipText: "{valueX.formatDate()}\n{name}\n{valueY}",
-    tooltipY: am5.percent(10)
-  });
-  
-  series.data.processor = am5.DataProcessor.new(root, {
-    dateFields: ["data_period"],
-    dateFormat: "MMM yyyy"
-  });
+    // series.strokes.template.setAll({
+    //   forceHidden: true
+    // });
 
-  if (total) {
-    series.bullets.push(function(target, series, dataItem) {
-      var index = chart.series.indexOf(series);
-      var dataItemIndex = series.dataItems.indexOf(dataItem);
-      var sum = 0;
-      chart.series.eachReverse(function(series, seriesIndex) {
-        if (seriesIndex <= index) {
-          var seriesDataItem = series.dataItems[dataItemIndex];
-          sum += seriesDataItem.get("valueY");
-        //   if (!series.get("stacked")) {
-        //     index = -1;
-        //   }
-        }
-      });
-      return am5.Bullet.new(root, {
-        locationY: 1,
-        sprite: am5.Label.new(root, {
-          text: root.numberFormatter.format(sum),
-          fill: am5.color(0x000000),
-          centerY: am5.p100,
-          centerX: am5.p50,
-          populateText: true
-        })
-      });
+    series.data.processor = am5.DataProcessor.new(root, {
+      dateFields: ["data_period"],
+      dateFormat: "MMM yyyy"
     });
+
+    series.data.setAll(data);
   }
+  else {
+    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+      name: name,
+      stacked: true,
+      xAxis: xAxis,
+      yAxis: yAxis,
+      valueYField: fieldName,
+      valueXField: "data_period",
+      tooltip: am5.Tooltip.new(root, {
+        pointerOrientation: "horizontal",
+        labelText: "{name}: [bold]{valueY}[/]"
+      })
+    }));
 
-  series.data.setAll(data);
+    // series.columns.template.setAll({
+    //   tooltipText: "{valueX.formatDate()}\n{name}\n{valueY}",
+    //   tooltipY: am5.percent(10)
+    // });
+    
+    
+    legend.data.push(series);
+    series.appear();
+    
+    series.data.processor = am5.DataProcessor.new(root, {
+      dateFields: ["data_period"],
+      dateFormat: "MMM yyyy"
+    });
 
-  // Make stuff animate on load
-  // https://www.amcharts.com/docs/v5/concepts/animations/
-  series.appear();
-
-  legend.data.push(series);
+    series.data.setAll(data);
+  }
+  
 }
 
 xAxis.data.setAll(data);
@@ -205,7 +237,9 @@ makeSeries("DHS", "DHS Total Unique Count");
 makeSeries("HRA DV", "HRA DV Total Unique Count");
 makeSeries("HRA HASA", "HRA HASA Total Unique Count");
 makeSeries("HPD (Est.)", "HPD Total Unique Count (105% Est.)");
-makeSeries("DYCD", "DYCD Total Unique Count", true); // Add 'true' as third parameter to enable totals
+makeSeries("DYCD", "DYCD Total Unique Count");
+
+// makeSeries(undefined, "DHS Total Unique Count", true);
 
 
 // Make stuff animate on load
