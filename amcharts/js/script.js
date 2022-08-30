@@ -13,7 +13,7 @@
 // Create root element
 // https://www.amcharts.com/docs/v5/getting-started/#Root_element
 var root = am5.Root.new("chartdiv");
-
+root.dateFormatter.set("dateFormat", "MMM yyyy");
 
 // Set themes
 // https://www.amcharts.com/docs/v5/concepts/themes/
@@ -152,7 +152,7 @@ function makeSeries(name, fieldName, total) {
   }));
 
   series.columns.template.setAll({
-    tooltipText: "{valueX}\n{name}\n{valueY}",
+    tooltipText: "{valueX.formatDate()}\n{name}\n{valueY}",
     tooltipY: am5.percent(10)
   });
   
