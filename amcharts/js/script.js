@@ -27,10 +27,7 @@ root.setThemes([
 var chart = root.container.children.push(am5xy.XYChart.new(root, {
   panX: false,
   panY: false,
-//   wheelX: "panX",
-//   wheelY: "zoomX",
   layout: root.verticalLayout,
-  // paddingTop: 40
 }));
 
 
@@ -92,17 +89,6 @@ var data = [
     {"data_period": "Jun 2022", "DHS Total Unique Count": 53819, "HRA DV Total Unique Count": 3810, "HRA HASA Total Unique Count": 3094, "HPD Total Unique Count (105% Est.)": 2533, "DYCD Total Unique Count": 362}
 ];
 
-// Months with missing data
-var missingMonths = [
-    {"data_period": "Oct 2019"},
-    {"data_period": "Nov 2019"},
-    {"data_period": "Dec 2019"},
-    {"data_period": "Jan 2020"},
-    {"data_period": "Feb 2020"},
-    {"data_period": "Mar 2020"},
-    {"data_period": "Apr 2020"},
-    {"data_period": "May 2020"}
-]; 
 
 
 // Attempt to load data from json file
@@ -112,18 +98,11 @@ var missingMonths = [
 
 // Create axes
 // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
-var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
-  categoryField: "data_period", //"year",
+var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+  baseInterval: {timeUnit: "month", count: 1},
   renderer: am5xy.AxisRendererX.new(root, {}),
   tooltip: am5.Tooltip.new(root, {})
 }));
-
-// series.data.processor = am5.DataProcessor.new(root, {
-//   dateFields: ["data_period"],
-//   dateFormat: "MMM yyyy"
-// });
-
-
 
 
 var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
@@ -169,12 +148,17 @@ function makeSeries(name, fieldName, total) {
     xAxis: xAxis,
     yAxis: yAxis,
     valueYField: fieldName,
-    categoryXField: "data_period", // "year" # try categoryXField
+    valueXField: "data_period",
   }));
 
   series.columns.template.setAll({
-    tooltipText: "{categoryX}\n{name}\n{valueY}",
+    tooltipText: "{valueX}\n{name}\n{valueY}",
     tooltipY: am5.percent(10)
+  });
+  
+  series.data.processor = am5.DataProcessor.new(root, {
+    dateFields: ["data_period"],
+    dateFormat: "MMM yyyy"
   });
 
   if (total) {
@@ -215,10 +199,6 @@ function makeSeries(name, fieldName, total) {
 
 xAxis.data.setAll(data);
 
-
-for (let i = 0; i < missingMonths.length; i++) {
-    xAxis.data.insertIndex(9 + i, missingMonths[i]);
-};
 
 
 makeSeries("DHS", "DHS Total Unique Count");
