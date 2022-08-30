@@ -30,7 +30,7 @@ var chart = root.container.children.push(am5xy.XYChart.new(root, {
 //   wheelX: "panX",
 //   wheelY: "zoomX",
   layout: root.verticalLayout,
-  paddingTop: 40
+  // paddingTop: 40
 }));
 
 
@@ -91,7 +91,20 @@ var data = [
     {"data_period": "May 2022", "DHS Total Unique Count": 52602, "HRA DV Total Unique Count": 3749, "HRA HASA Total Unique Count": 455, "HPD Total Unique Count (105% Est.)": 2488, "DYCD Total Unique Count": 280},
     {"data_period": "Jun 2022", "DHS Total Unique Count": 53819, "HRA DV Total Unique Count": 3810, "HRA HASA Total Unique Count": 3094, "HPD Total Unique Count (105% Est.)": 2533, "DYCD Total Unique Count": 362}
 ];
-  
+
+// Months with missing data
+var missingMonths = [
+    {"data_period": "Oct 2019"},
+    {"data_period": "Nov 2019"},
+    {"data_period": "Dec 2019"},
+    {"data_period": "Jan 2020"},
+    {"data_period": "Feb 2020"},
+    {"data_period": "Mar 2020"},
+    {"data_period": "Apr 2020"},
+    {"data_period": "May 2020"}
+]; 
+
+
 // Attempt to load data from json file
 // am5.net.load("../json/data_from_scraper.json", chart).then(function(result){
 //     var data = am5.JSONParser.parse(result.response);
@@ -105,24 +118,12 @@ var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
   tooltip: am5.Tooltip.new(root, {})
 }));
 
-xAxis.data.setAll(data);
+// series.data.processor = am5.DataProcessor.new(root, {
+//   dateFields: ["data_period"],
+//   dateFormat: "MMM yyyy"
+// });
 
 
-// Months with missing data
-var missingMonths = [
-    {"data_period": "Oct 2019"},
-    {"data_period": "Nov 2019"},
-    {"data_period": "Dec 2019"},
-    {"data_period": "Jan 2020"},
-    {"data_period": "Feb 2020"},
-    {"data_period": "Mar 2020"},
-    {"data_period": "Apr 2020"},
-    {"data_period": "May 2020"}
-];
-
-for (let i = 0; i < missingMonths.length; i++) {
-    xAxis.data.insertIndex(9 + i, missingMonths[i]);
-};
 
 
 var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
@@ -168,7 +169,7 @@ function makeSeries(name, fieldName, total) {
     xAxis: xAxis,
     yAxis: yAxis,
     valueYField: fieldName,
-    categoryXField: "data_period", // "year"
+    categoryXField: "data_period", // "year" # try categoryXField
   }));
 
   series.columns.template.setAll({
@@ -212,13 +213,22 @@ function makeSeries(name, fieldName, total) {
   legend.data.push(series);
 }
 
+xAxis.data.setAll(data);
+
+
+for (let i = 0; i < missingMonths.length; i++) {
+    xAxis.data.insertIndex(9 + i, missingMonths[i]);
+};
+
+
 makeSeries("DHS", "DHS Total Unique Count");
 makeSeries("HRA DV", "HRA DV Total Unique Count");
 makeSeries("HRA HASA", "HRA HASA Total Unique Count");
 makeSeries("HPD (Est.)", "HPD Total Unique Count (105% Est.)");
-makeSeries("DYCD", "DYCD Total Unique Count"); // Add 'true' as third parameter to enable totals
+makeSeries("DYCD", "DYCD Total Unique Count", true); // Add 'true' as third parameter to enable totals
 
 
 // Make stuff animate on load
 // https://www.amcharts.com/docs/v5/concepts/animations/
 chart.appear(1000, 100);
+
