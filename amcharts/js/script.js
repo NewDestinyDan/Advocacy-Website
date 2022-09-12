@@ -332,7 +332,14 @@ var data = [
     "HRA DV Total Unique Count": 3810,
     "HRA HASA Total Unique Count": 3094,
     "HPD Total Unique Count (105% Est.)": 2533,
-    "DYCD Total Unique Count": 362}
+    "DYCD Total Unique Count": 362},
+  {
+    "data_period": "Jul 2022", 
+    "DHS Total Unique Count": 56557, 
+    "HRA DV Total Unique Count": 4001, 
+    "HRA HASA Total Unique Count": 3193, 
+    "HPD Total Unique Count (105% Est.)": 2394, 
+    "DYCD Total Unique Count": 350}
 ]
 
 
