@@ -339,7 +339,8 @@ var data = [
     "HRA DV Total Unique Count": 4001, 
     "HRA HASA Total Unique Count": 3193, 
     "HPD Total Unique Count (105% Est.)": 2394, 
-    "DYCD Total Unique Count": 350}
+    "DYCD Total Unique Count": 350
+  }
 ]
 
 
