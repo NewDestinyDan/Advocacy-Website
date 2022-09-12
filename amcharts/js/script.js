@@ -422,14 +422,14 @@ function makeSeries(name, fieldName, hidden) {
       valueXField: "data_period"
     }));
 
-    // series.strokes.template.setAll({
-    //   forceHidden: true
-    // });
-
     series.data.processor = am5.DataProcessor.new(root, {
       dateFields: ["data_period"],
       dateFormat: "MMM yyyy"
     });
+    
+    // series.strokes.template.setAll({
+    //   forceHidden: true
+    // });
 
     series.data.setAll(data);
   }
@@ -476,7 +476,7 @@ makeSeries("HRA HASA", "HRA HASA Total Unique Count");
 makeSeries("HPD (Est.)", "HPD Total Unique Count (105% Est.)");
 makeSeries("DYCD", "DYCD Total Unique Count");
 
-// makeSeries(undefined, "DHS Total Unique Count", true);
+makeSeries(undefined, "DHS Total Unique Count", true);
 
 
 // Make stuff animate on load
