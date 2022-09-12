@@ -353,8 +353,7 @@ var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
 
 var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
   min: 0,
-  renderer: am5xy.AxisRendererY.new(root, {}),
-  // calculateTotals: true
+  renderer: am5xy.AxisRendererY.new(root, {})
 }));
 
 // Set up secondary X axis to show sum tooltip for
@@ -375,10 +374,11 @@ xAxis2.get("tooltip").label.adapters.add("text", function(text, target) {
   var sum = 0;
   chart.series.each(function(series) {
     var dataItem = series.get("tooltipDataItem");
-    if (dataItem ) {
+    var dataName = series.get("name");
+    if (dataItem && dataName != undefined) {
       sum += dataItem.get("valueY");
     }
-  })
+  });
   return "Total: [bold]" + root.numberFormatter.format(sum) + "[/]";
 });
 
@@ -427,9 +427,9 @@ function makeSeries(name, fieldName, hidden) {
       dateFormat: "MMM yyyy"
     });
     
-    series.strokes.template.setAll({
-      forceHidden: true
-    });
+    // series.strokes.template.setAll({
+    //   forceHidden: true
+    // });
 
     series.data.setAll(data);
   }
