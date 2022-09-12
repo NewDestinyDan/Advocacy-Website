@@ -379,7 +379,7 @@ xAxis2.get("tooltip").label.adapters.add("text", function(text, target) {
       sum += dataItem.get("valueY");
     }
   });
-  return "Total: [bold]" + root.numberFormatter.format(sum) + "[/]";
+  return "Five System Total: [bold]" + root.numberFormatter.format(sum) + "[/]";
 });
 
 
