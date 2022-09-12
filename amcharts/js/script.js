@@ -418,7 +418,7 @@ function makeSeries(name, fieldName, hidden) {
       xAxis: xAxis2,
       yAxis: yAxis,
       stacked: true,
-      valueYField: fieldName,
+      // valueYField: fieldName,
       valueXField: "data_period"
     }));
 
@@ -476,7 +476,8 @@ makeSeries("HRA HASA", "HRA HASA Total Unique Count");
 makeSeries("HPD (Est.)", "HPD Total Unique Count (105% Est.)");
 makeSeries("DYCD", "DYCD Total Unique Count");
 
-makeSeries(undefined, "DHS Total Unique Count", true);
+// Create total tooltip label
+makeSeries(undefined, "DYCD Total Unique Count", true);
 
 
 // Make stuff animate on load
