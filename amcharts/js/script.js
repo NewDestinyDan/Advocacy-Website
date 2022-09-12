@@ -375,7 +375,7 @@ xAxis2.get("tooltip").label.adapters.add("text", function(text, target) {
   var sum = 0;
   chart.series.each(function(series) {
     var dataItem = series.get("tooltipDataItem");
-    if (dataItem) {
+    if (dataItem ) {
       sum += dataItem.get("valueY");
     }
   })
@@ -427,9 +427,9 @@ function makeSeries(name, fieldName, hidden) {
       dateFormat: "MMM yyyy"
     });
     
-    // series.strokes.template.setAll({
-    //   forceHidden: true
-    // });
+    series.strokes.template.setAll({
+      forceHidden: true
+    });
 
     series.data.setAll(data);
   }
